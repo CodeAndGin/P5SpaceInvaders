@@ -9,6 +9,7 @@
 //		2: Add more invader classes, use 2d arrays done	//
 //		3: Implement game states with booleans	done	//
 //		4: Animate the invaders maybe					//
+//		5: Shields and losing. HARD						//
 //														//
 //////////////////////////////////////////////////////////
 
@@ -26,7 +27,6 @@ var bullets = [];			//array of bullets
 
 var invaderRowArray = [[], [], [], [], []];		//2D array of invaders to be instantiated in setup 
 var lastInvader = [];							//Array to contain the index of the final invader in each array of invaderRowArray
-
 
 var player; //The player object
 
@@ -305,7 +305,7 @@ function invader3 (x, y) {
 }
 
 function ufo(x, y) {
-//do shit here
+	// this'll be the random one at the top
 }
 
 function pixel(x, y) { 		//A function to make it slightly easier to call each rect as a pseudo pixel
@@ -556,7 +556,10 @@ function invaderCommand () {
 function pointsManager () {		//basic points management
 	points = (30 - threshold/2)*15;
 	if (frame == threshold-1 && score > 0) score -= 10;
-	text(score, 10, 10);
+	push();
+	fill(255);
+	text("Score: " + score, startPointX+boxWidth*50, boxHeight*8);
+	pop();
 }
 
 function gameStateController () {
@@ -615,6 +618,8 @@ function gameScreen () {
 	}
 	player.revival();
 
+	livesHUD();
+
 	if (lives < 1) {
 		gameState = 3;
 	}
@@ -662,5 +667,30 @@ function gameOverScreen () {
 	textAlign(CENTER);
 	textSize();
 	text(lines, width/2, height/2);
+	pop();
+}
+
+function livesHUD () {
+	for (var i = 0; i < lives; i++) {
+		miniPlayer(i);
+	}
+}
+
+function miniPlayer (i) {
+	push();
+	fill(100, 255, 0);
+	push();
+	fill(255);
+	textAlign(LEFT);
+	text("Lives: ", startPointX+boxWidth, boxHeight*8);
+	pop();
+	var x = startPointX +boxWidth*15+ boxWidth*5 * i;
+	pixel(x + boxWidth, boxHeight * 5);
+	for (var j = 0; j<3; j++) {
+		pixel(x+boxWidth*j, boxHeight*6);
+	}
+	for (var j = 0; j<3; j++) {
+		pixel(x+boxWidth*j, boxHeight*7);
+	}
 	pop();
 }
