@@ -1,17 +1,20 @@
 //SPACE INVADERS
-//originally in 224*256 pixel grid
+//originally in 224*256 pixel grid,
+//so I tried to emulate that using the p5 rect
+//and some maths with width and height
 
-//////////////////////////////////////////////////////////
-//														//
-//						  TARGETS						//
-//														//
-//		1: Implement a score system	 done				//
-//		2: Add more invader classes, use 2d arrays done	//
-//		3: Implement game states with booleans	done	//
-//		4: Animate the invaders maybe					//
-//		5: Shields and losing. HARD						//
-//														//
-//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//															//
+//						  TARGETS							//
+//															//
+//		1: Implement a score system	 done					//
+//		2: Add more invader classes, use 2d arrays done		//
+//		3: Implement game states with booleans	done		//
+//		4: Animate the invaders maybe						//
+//		4a: Audio too										//
+//		5: Shields and losing. HARD							//
+//															//
+//////////////////////////////////////////////////////////////
 
 
 //implementing a pseudo pixel grid
@@ -25,7 +28,7 @@ var bgwidth;
 
 var bullets = [];			//array of bullets
 
-var invaderRowArray = [[], [], [], [], []];		//2D array of invaders to be instantiated in setup 
+var invaderRowArray = [[], [], [], [], []];		//2D array of invaders to be instantiated in setup
 var lastInvader = [];							//Array to contain the index of the final invader in each array of invaderRowArray
 
 var player; //The player object
@@ -189,7 +192,7 @@ function invader2 (x, y) {
 		for (let i = 6; i < 8; i++) {
 			pixel(this.x + this.bw*i, this.y + this.bh*3);
 		}
-		//line 5 
+		//line 5
 		for (let i = 0; i < 8; i++) {
 			pixel(this.x + this.bw*i, this.y + this.bh*4);
 		}
@@ -404,7 +407,7 @@ function playerShip (x, y) {	//the PlayerShip class
 			console.log(this.revive + " " + lives);
 			if (frame == threshold-1 && lives > 0) {
 				this.revive+=1;
-			} 
+			}
 			if (this.revive > 2) {
 				this.alive = true;
 				this.revive = 0;
@@ -450,8 +453,8 @@ function bullet (tag, x, y) {
 	this.hit = function () {
 
 		for (var i = 0; i < invaderRowArray.length; i++) {
-			for (var j = 0; j < invaderRowArray[i].length; j++) { 
-				if (this.x > invaderRowArray[i][j].x && this.x < invaderRowArray[i][j].x+invaderRowArray[i][j].bw*invaderRowArray[i][j].width 
+			for (var j = 0; j < invaderRowArray[i].length; j++) {
+				if (this.x > invaderRowArray[i][j].x && this.x < invaderRowArray[i][j].x+invaderRowArray[i][j].bw*invaderRowArray[i][j].width
 					&& this.y > invaderRowArray[i][j].y && this.y < invaderRowArray[i][j].y + invaderRowArray[i][j].bh*8 && this.tag == "player") {
 					bullets.splice(bullets.indexOf(this), 1);
 					invaderRowArray[i].splice(j, 1);	//when player bullet hits an invader, will kill the invader, and the bullet
@@ -459,7 +462,7 @@ function bullet (tag, x, y) {
 				}
 			}
 		}
-		if (this.tag == 'invader' && this.x < player.x+boxWidth*16 && this.x > player.x && this.y > player.y 
+		if (this.tag == 'invader' && this.x < player.x+boxWidth*16 && this.x > player.x && this.y > player.y
 			&& this.y < player.y + boxHeight*8 && lives > 0 && player.alive) {
 			lives -= 1;
 			player.x = mid - boxWidth*8;
@@ -526,13 +529,13 @@ function invaderCommand () {
 				faster++;
 				break;
 			}
-			if(invaderRowArray[i][0].x + boxWidth > startPointX + boxWidth*10 
+			if(invaderRowArray[i][0].x + boxWidth > startPointX + boxWidth*10
 				&& invaderRowArray[i][lastInvader[i]].x + boxWidth*12 < endPointX - boxWidth*10) {
 				vert = 0;
 			}
-			if(invaderRowArray[i][lastInvader[i]].x + boxWidth*12 < endPointX - boxWidth*10 
+			if(invaderRowArray[i][lastInvader[i]].x + boxWidth*12 < endPointX - boxWidth*10
 				&& invaderRowArray[i][0].x + boxWidth > startPointX + boxWidth*10) {
-				vert = 0;	
+				vert = 0;
 			}
 
 		}
@@ -563,17 +566,26 @@ function pointsManager () {		//basic points management
 }
 
 function gameStateController () {
-	if (gameState == 0) {
-		startScreen();
-	}
-	else if (gameState == 1) {
-		gameScreen();
-	}
-	else if (gameState == 2) {
-		winScreen();
-	}
-	else if (gameState == 3) {
-		gameOverScreen();
+	switch (gameState) {
+		default:
+			startScreen();
+			break;
+
+		case 0:
+			startScreen();
+			break;
+
+		case 1:
+			gameScreen();
+			break;
+
+		case 2:
+			winScreen();
+			break;
+
+		case 3:
+			gameOverScreen();
+			break;
 	}
 }
 
@@ -582,26 +594,40 @@ function gameScreen () {
 		setup();
 		reset = false;
 	}
-	//prevents crashing when a row is emptied
-	for (var i = 0; i < invaderRowArray.length; i++) {
-		if (invaderRowArray[i].length < 1) {
-			invaderRowArray.splice(i, 1);
-		}
-	}
 	//basic setup of screen and background
 	background(125);
 	push();
 	fill(0);
 	rect(startPointX, 0, endPointX-startPointX, height);
 	pop();
+
+	objectManager();
+	//handles the points
+	pointsManager();
+
+	livesHUD();
+
+	if (lives < 1) {
+		gameState = 3;
+	}
+	if (invaderRowArray.length < 1) {
+		gameState = 2;
+	}
+}
+
+function objectManager () {
+	//prevents crashing when a row is emptied
+	for (var i = 0; i < invaderRowArray.length; i++) {
+		if (invaderRowArray[i].length < 1) {
+			invaderRowArray.splice(i, 1);
+		}
+	}
 	//updating the index of the rightmost invader per row
 	for (var i = 0; i < invaderRowArray.length; i++) {
 		lastInvader[i] = invaderRowArray[i].length - 1;
 	}
 	//updates the invader's position once every THRESHOLD frames
 	invaderCommand();
-	//handles the points
-	pointsManager();
 	//draws and moves the bullets, kills bullets and invaders
 	for (let i = 0; i<bullets.length; i++) {
 		bullets[i].run();
@@ -617,15 +643,6 @@ function gameScreen () {
 		player.run();
 	}
 	player.revival();
-
-	livesHUD();
-
-	if (lives < 1) {
-		gameState = 3;
-	}
-	if (invaderRowArray.length < 1) {
-		gameState = 2;
-	}
 }
 
 function startScreen () {
