@@ -3,6 +3,9 @@
 //so I tried to emulate that using the p5 rect
 //and some maths with width and height
 
+//not using ECMAscript classes becaus the implementation broke for some reason,
+//and is working with functions as classes.
+
 //////////////////////////////////////////////////////////////
 //															//
 //						  TARGETS							//
@@ -39,6 +42,8 @@ var vert = 0;
 var frame = 0;
 var faster = 0;
 
+var shields = [[], [], [], []];	//another array
+
 //scores
 var score = 0;
 var points = 0;
@@ -69,6 +74,7 @@ function setup() {
 
 	invaderRowArray = [[], [], [], [], []];
 	bullets = [];
+	shields = [[[], [], []], [[], [], []], [[], [], []], [[], [], []]];
 
 	//instantiating the invaders as an array of arrays, an array per row of enemies
 	for (var i = 0; i < invaderRowArray.length; i++) {
@@ -81,6 +87,17 @@ function setup() {
 				invaderRowArray[i][j] = new invader3(startPointX+boxWidth*20+(j*(boxWidth*15)), boxHeight*10+i*boxHeight*9);
 			}
 		}
+	}
+
+	//instantiate the shields
+	for (var i = 0; i < shields.length; i++) {
+		for (var j = 0; j < 3; j++) {
+			for (var k = 0; k < 3; k++) {
+				shields[i][j][k] = new shieldPart(startPointX + bgwidth/8 - 15*boxHeight +
+					(i*bgwidth/4) + (k*boxHeight*10), height - boxHeight*50 + j * 5*boxHeight);
+			}
+		}
+		shields[i][2][1] = undefined;
 	}
 
 	//instantiate the player
@@ -451,14 +468,27 @@ function bullet (tag, x, y) {
 	}
 
 	this.hit = function () {
-
 		for (var i = 0; i < invaderRowArray.length; i++) {
 			for (var j = 0; j < invaderRowArray[i].length; j++) {
 				if (this.x > invaderRowArray[i][j].x && this.x < invaderRowArray[i][j].x+invaderRowArray[i][j].bw*invaderRowArray[i][j].width
-					&& this.y > invaderRowArray[i][j].y && this.y < invaderRowArray[i][j].y + invaderRowArray[i][j].bh*8 && this.tag == "player") {
+					&& this.y > invaderRowArray[i][j].y && this.y < invaderRowArray[i][j].y + invaderRowArray[i][j].bh*8 &&
+					this.tag == "player") {
 					bullets.splice(bullets.indexOf(this), 1);
 					invaderRowArray[i].splice(j, 1);	//when player bullet hits an invader, will kill the invader, and the bullet
 					score += points;
+				}
+			}
+		}
+		for (var i = 0; i < shields.length; i++) {
+			for (var j = 0; j < shields[i].length; j++) {
+				for (var k = 0; k < shields[i][j].length; k++) {
+					if (shields[i][j][k] !== undefined && shields[i][j][k].alive) {
+						if (this.x > shields[i][j][k].x && this.x < shields[i][j][k].x + shields[i][j][k].width*boxWidth &&
+						this.y > shields[i][j][k].y && this.y < shields[i][j][k].y + shields[i][j][k].height*boxHeight) {
+							bullets.splice(bullets.indexOf(this), 1);
+							shields[i][j][k].alive = !shields[i][j][k].alive;
+						}
+					}
 				}
 			}
 		}
@@ -556,6 +586,45 @@ function invaderCommand () {
 	}
 }
 
+function objectManager () {
+	//prevents crashing when a row is emptied
+	for (var i = 0; i < invaderRowArray.length; i++) {
+		if (invaderRowArray[i].length < 1) {
+			invaderRowArray.splice(i, 1);
+		}
+	}
+	//updating the index of the rightmost invader per row
+	for (var i = 0; i < invaderRowArray.length; i++) {
+		lastInvader[i] = invaderRowArray[i].length - 1;
+	}
+	//updates the invader's position once every THRESHOLD frames
+	invaderCommand();
+	//draws and moves the bullets, kills bullets and invaders
+	for (let i = 0; i<bullets.length; i++) {
+		bullets[i].run();
+	}
+	//draws the invaders
+	for (var i = 0; i < invaderRowArray.length; i++) {
+		for (var j = 0; j < invaderRowArray[i].length; j++) {
+			invaderRowArray[i][j].run();
+		}
+	}
+	for (var i = 0; i < shields.length; i++) {
+		for (var j = 0; j < shields[i].length; j++) {
+			for (var k = 0; k < shields[i][j].length; k++) {
+				if (shields[i][j][k] !== undefined) {
+					shields[i][j][k].draw();
+				}
+			}
+		}
+	}
+	//draws and moves the player while not dead
+	if (player.alive) {
+		player.run();
+	}
+	player.revival();
+}
+
 function pointsManager () {		//basic points management
 	points = (30 - threshold/2)*15;
 	if (frame == threshold-1 && score > 0) score -= 10;
@@ -613,36 +682,6 @@ function gameScreen () {
 	if (invaderRowArray.length < 1) {
 		gameState = 2;
 	}
-}
-
-function objectManager () {
-	//prevents crashing when a row is emptied
-	for (var i = 0; i < invaderRowArray.length; i++) {
-		if (invaderRowArray[i].length < 1) {
-			invaderRowArray.splice(i, 1);
-		}
-	}
-	//updating the index of the rightmost invader per row
-	for (var i = 0; i < invaderRowArray.length; i++) {
-		lastInvader[i] = invaderRowArray[i].length - 1;
-	}
-	//updates the invader's position once every THRESHOLD frames
-	invaderCommand();
-	//draws and moves the bullets, kills bullets and invaders
-	for (let i = 0; i<bullets.length; i++) {
-		bullets[i].run();
-	}
-	//draws the invaders
-	for (var i = 0; i < invaderRowArray.length; i++) {
-		for (var j = 0; j < invaderRowArray[i].length; j++) {
-			invaderRowArray[i][j].run();
-		}
-	}
-	//draws and moves the player while not dead
-	if (player.alive) {
-		player.run();
-	}
-	player.revival();
 }
 
 function startScreen () {
@@ -710,4 +749,24 @@ function miniPlayer (i) {
 		pixel(x+boxWidth*j, boxHeight*7);
 	}
 	pop();
+}
+
+//shield will function as an array of a 9x9 grid of squares for simplicity.
+function shieldPart (x, y) {
+	this.x = x;
+	this.y = y;
+	this.bw = boxWidth;
+	this.bh = this.bw;
+	this.width = 10;
+	this.height = 5;
+	this.alive = true;
+
+	this.draw = function () {
+		if (this.alive) {
+			push();
+			fill(100, 0, 255);
+			rect (x, y, this.bw * this.width, this.bh * this.height);
+			pop();
+		}
+	}
 }
