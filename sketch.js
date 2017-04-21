@@ -1,10 +1,10 @@
 //SPACE INVADERS
 //originally in 224*256 pixel grid,
-//so I tried to emulate that using the p5 rect
-//and some maths with width and height
+//so I tried to emulate that using the p5 rect function as 'pixels'
+//and some basic maths using width and height
 
 //not using ECMAscript classes becaus the implementation broke for some reason,
-//and is working with functions as classes.
+//but does work with functions and 'this.' syntax.
 
 //////////////////////////////////////////////////////////////
 //															//
@@ -14,8 +14,8 @@
 //		2: Add more invader classes, use 2d arrays done		//
 //		3: Implement game states with booleans	done		//
 //		4: Animate the invaders maybe						//
-//		4a: Audio too										//
-//		5: Shields and losing. HARD							//
+//		4a: Audio too?										//
+//		5: Shields and losing. kinda done					//
 //															//
 //////////////////////////////////////////////////////////////
 
@@ -53,7 +53,9 @@ var lives = 3;
 var gameState = 0;
 var reset = false;
 
-function setup() {
+var anim = false;
+
+function setup() {	//called at the beginning, but also when restarting the game.
 	//basic setup
 	noStroke();
 	createCanvas(windowWidth, windowHeight);
@@ -119,45 +121,91 @@ function invader1 (x, y) {
 		push();
 		fill(100, 0, 255);
 		//line1
-		pixel(this.x + this.bw*3, this.y);
-		pixel(this.x + this.bw*9, this.y);
-		//line2
-		pixel(this.x + this.bw*4, this.y + this.bh*1);
-		pixel(this.x + this.bw*8, this.y + this.bh*1);
-		//line3
-		for (var x = 3; x<=9; x++) {
-			pixel(this.x + this.bw*x, this.y + this.bh*2);
+		if (anim) {
+			pixel(this.x + this.bw*3, this.y);
+			pixel(this.x + this.bw*9, this.y);
+			//line2
+			pixel(this.x + this.bw*4, this.y + this.bh*1);
+			pixel(this.x + this.bw*8, this.y + this.bh*1);
+			//line3
+			for (var x = 3; x<=9; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*2);
+			}
+			//line4
+			for (var x = 2; x<=3; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*3);
+			}
+			for (var x = 5; x<=7; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*3);
+			}
+			for (var x = 9; x<=10; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*3);
+			}
+			//line5
+			for (var x = 1; x<=11; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*4);
+			}
+			//line6
+			pixel(this.x + this.bw*1, this.y + this.bh*5);
+			pixel(this.x + this.bw*11, this.y + this.bh*5);
+			for (var x = 3; x<=9; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*5);
+			}
+			//line7
+			pixel(this.x + this.bw*1, this.y + this.bh*6);
+			pixel(this.x + this.bw*3, this.y + this.bh*6);
+			pixel(this.x + this.bw*9, this.y + this.bh*6);
+			pixel(this.x + this.bw*11, this.y + this.bh*6);
+			//line8
+			pixel(this.x + this.bw*4, this.y + this.bh*7);
+			pixel(this.x + this.bw*5, this.y + this.bh*7);
+			pixel(this.x + this.bw*7, this.y + this.bh*7);
+			pixel(this.x + this.bw*8, this.y + this.bh*7);	//longwinded drawing of the invader
 		}
-		//line4
-		for (var x = 2; x<=3; x++) {
-			pixel(this.x + this.bw*x, this.y + this.bh*3);
+		else
+		{
+			//line1
+			pixel(this.x + this.bw*3, this.y);
+			pixel(this.x + this.bw*9, this.y);
+			//line2
+			pixel(this.x + this.bw*4, this.y + this.bh*1);
+			pixel(this.x + this.bw*8, this.y + this.bh*1);
+			pixel(this.x + this.bw*1, this.y + this.bh*1);
+			pixel(this.x + this.bw*11, this.y + this.bh*1);
+			//line3
+			for (var x = 3; x<=9; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*2);
+			}
+			pixel(this.x + this.bw*1, this.y + this.bh*2);
+			pixel(this.x + this.bw*11, this.y + this.bh*2);
+			//line4
+			for (var x = 1; x<=3; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*3);
+			}
+			for (var x = 5; x<=7; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*3);
+			}
+			for (var x = 9; x<=11; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*3);
+			}
+			//line5
+			for (var x = 1; x<=11; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*4);
+			}
+			//line6
+
+			for (var x = 2; x<=10; x++) {
+				pixel(this.x + this.bw*x, this.y + this.bh*5);
+			}
+			//line7
+
+			pixel(this.x + this.bw*3, this.y + this.bh*6);
+			pixel(this.x + this.bw*9, this.y + this.bh*6);
+
+			//line8
+			pixel(this.x + this.bw*2, this.y + this.bh*7);
+			pixel(this.x + this.bw*10, this.y + this.bh*7);	//longwinded animating of the invader
 		}
-		for (var x = 5; x<=7; x++) {
-			pixel(this.x + this.bw*x, this.y + this.bh*3);
-		}
-		for (var x = 9; x<=10; x++) {
-			pixel(this.x + this.bw*x, this.y + this.bh*3);
-		}
-		//line5
-		for (var x = 1; x<=11; x++) {
-			pixel(this.x + this.bw*x, this.y + this.bh*4);
-		}
-		//line6
-		pixel(this.x + this.bw*1, this.y + this.bh*5);
-		pixel(this.x + this.bw*11, this.y + this.bh*5);
-		for (var x = 3; x<=9; x++) {
-			pixel(this.x + this.bw*x, this.y + this.bh*5);
-		}
-		//line7
-		pixel(this.x + this.bw*1, this.y + this.bh*6);
-		pixel(this.x + this.bw*3, this.y + this.bh*6);
-		pixel(this.x + this.bw*9, this.y + this.bh*6);
-		pixel(this.x + this.bw*11, this.y + this.bh*6);
-		//line8
-		pixel(this.x + this.bw*4, this.y + this.bh*7);
-		pixel(this.x + this.bw*5, this.y + this.bh*7);
-		pixel(this.x + this.bw*7, this.y + this.bh*7);
-		pixel(this.x + this.bw*8, this.y + this.bh*7);	//longwinded drawing of the invader
 		pop();
 	}
 
@@ -213,18 +261,37 @@ function invader2 (x, y) {
 		for (let i = 0; i < 8; i++) {
 			pixel(this.x + this.bw*i, this.y + this.bh*4);
 		}
-		//line 6
-		pixel(this.x + this.bw, this.y + this.bh*5);
-		for (let i = 3; i < 5; i++) {
-			pixel(this.x + this.bw*i, this.y + this.bh*5);
+		if (anim) {
+			//line 6
+			pixel(this.x + this.bw, this.y + this.bh*5);
+			for (let i = 3; i < 5; i++) {
+				pixel(this.x + this.bw*i, this.y + this.bh*5);
+			}
+			pixel(this.x + this.bw*6, this.y + this.bh * 5);
+			//line 7
+			pixel(this.x, this.y + this.bh * 6);
+			pixel(this.x + this.bw * 7, this.y + this.bh * 6);
+			//line 8
+			pixel(this.x + this.bw, this.y + this.bh * 7);
+			pixel(this.x + this.bw*6, this.y + this.bh * 7);
 		}
-		pixel(this.x + this.bw*6, this.y + this.bh * 5);
-		//line 7
-		pixel(this.x, this.y + this.bh * 6);
-		pixel(this.x + this.bw * 7, this.y + this.bh * 6);
-		//line 8
-		pixel(this.x + this.bw, this.y + this.bh * 7);
-		pixel(this.x + this.bw*6, this.y + this.bh * 7);
+		else
+		{
+			//line 6
+			pixel(this.x + this.bw*2, this.y + this.bh * 5);
+			pixel(this.x + this.bw*5, this.y + this.bh * 5);
+			//line 7
+			pixel(this.x + this.bw, this.y + this.bh*6);
+			for (let i = 3; i < 5; i++) {
+				pixel(this.x + this.bw*i, this.y + this.bh*6);
+			}
+			pixel(this.x + this.bw*6, this.y + this.bh * 6);
+			//line 8
+			pixel(this.x, this.y + this.bh * 7);
+			pixel(this.x + this.bw*2, this.y + this.bh * 7);
+			pixel(this.x + this.bw*5, this.y + this.bh * 7);
+			pixel(this.x + this.bw*7, this.y + this.bh * 7);
+		}
 		pop();
 	}
 
@@ -280,29 +347,57 @@ function invader3 (x, y) {
 		for (var i = 0; i < 12; i++) {
 			pixel (this.x + this.bw * i, this.y + this.bh * 4);
 		}
-		//line 6
-		for (var i = 2; i < 5; i++) {
-			pixel (this.x + this.bw * i, this.y + this.bh * 5);
+		if (anim) {
+			//line 6
+			for (var i = 2; i < 5; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 5);
+			}
+			for (var i = 7; i < 10; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 5);
+			}
+			//line 7
+			for (var i = 1; i < 3; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 6);
+			}
+			for (var i = 5; i < 7; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 6);
+			}
+			for (var i = 9; i < 11; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 6);
+			}
+			//line 8
+			for (var i = 2; i < 4; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 7);
+			}
+			for (var i = 8; i < 10; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 7);
+			}
 		}
-		for (var i = 7; i < 10; i++) {
-			pixel (this.x + this.bw * i, this.y + this.bh * 5);
-		}
-		//line 7
-		for (var i = 1; i < 3; i++) {
-			pixel (this.x + this.bw * i, this.y + this.bh * 6);
-		}
-		for (var i = 5; i < 7; i++) {
-			pixel (this.x + this.bw * i, this.y + this.bh * 6);
-		}
-		for (var i = 9; i < 11; i++) {
-			pixel (this.x + this.bw * i, this.y + this.bh * 6);
-		}
-		//line 8
-		for (var i = 2; i < 4; i++) {
-			pixel (this.x + this.bw * i, this.y + this.bh * 7);
-		}
-		for (var i = 8; i < 10; i++) {
-			pixel (this.x + this.bw * i, this.y + this.bh * 7);
+		else {
+			//line 6
+			for (var i = 3; i < 5; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 5);
+			}
+			for (var i = 7; i < 9; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 5);
+			}
+			//line 7
+			for (var i = 2; i < 4; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 6);
+			}
+			for (var i = 5; i < 7; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 6);
+			}
+			for (var i = 8; i < 10; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 6);
+			}
+			//line 8
+			for (var i = 0; i < 2; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 7);
+			}
+			for (var i = 10; i < 12; i++) {
+				pixel (this.x + this.bw * i, this.y + this.bh * 7);
+			}
 		}
 
 		pop();
@@ -486,7 +581,7 @@ function bullet (tag, x, y) {
 						if (this.x > shields[i][j][k].x && this.x < shields[i][j][k].x + shields[i][j][k].width*boxWidth &&
 						this.y > shields[i][j][k].y && this.y < shields[i][j][k].y + shields[i][j][k].height*boxHeight) {
 							bullets.splice(bullets.indexOf(this), 1);
-							shields[i][j][k].alive = !shields[i][j][k].alive;
+							shields[i][j][k].alive = !shields[i][j][k].alive;	//kills shields. 3d arrays are confusing ahh
 						}
 					}
 				}
@@ -567,6 +662,9 @@ function invaderCommand () {
 				&& invaderRowArray[i][0].x + boxWidth > startPointX + boxWidth*10) {
 				vert = 0;
 			}
+			if (invaderRowArray[i][0].y > height - boxHeight*80) {
+				gameState = 3;
+			}
 
 		}
 		if (faster > 1) {
@@ -577,6 +675,7 @@ function invaderCommand () {
 	//calling move on each invader to move by hor and vert
 	if (frame == threshold) {
 		frame = 0;
+		anim = !anim;
 		invaderRowArray.forEach(function(a) {
 			a.forEach(function(b) {
 				b.move();
@@ -701,14 +800,14 @@ function startScreen () {
 function winScreen () {
 	push();
 	background(125);
-	var lines = "Score: "+score+"\nPress SHIFT to replay";
+	var lines = "Score: " + score + "\nPress SHIFT to continue";
 	fill(0);
-	rect(startPointX, 0, endPointX-startPointX, height);
+	rect(startPointX, 0, endPointX - startPointX, height);
 	fill(0, 255, 0);
-	var sizes = bgwidth/50;
+	var sizes = bgwidth / 50;
 	textAlign(CENTER);
 	textSize();
-	text(lines, width/2, height/2);
+	text(lines, width / 2, height / 2);
 	pop();
 }
 
