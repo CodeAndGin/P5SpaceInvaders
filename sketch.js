@@ -14,7 +14,7 @@
 //		2: Add more invader classes, use 2d arrays done		//
 //		3: Implement game states with booleans	done		//
 //		4: Animate the invaders maybe						//
-//		4a: Audio too?										//
+//		4a: Audio too?	ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhh		//
 //		5: Shields and losing. kinda done					//
 //															//
 //////////////////////////////////////////////////////////////
@@ -417,10 +417,6 @@ function invader3 (x, y) {
 	this.run = function () { 	//not really needed anymore
 		this.draw();
 	}
-}
-
-function ufo(x, y) {
-	// this'll be the random one at the top
 }
 
 function pixel(x, y) { 		//A function to make it slightly easier to call each rect as a pseudo pixel
