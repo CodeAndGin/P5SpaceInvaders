@@ -14,7 +14,6 @@
 //		2: Add more invader classes, use 2d arrays done		//
 //		3: Implement game states with booleans	done		//
 //		4: Animate the invaders maybe						//
-//		4a: Audio too?	ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhh		//
 //		5: Shields and losing. kinda done					//
 //															//
 //////////////////////////////////////////////////////////////
